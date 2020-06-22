@@ -1,0 +1,23 @@
+    /**********************************************************************************/
+    /**
+     * Convert Amount
+     *
+     * @throws InterruptedException
+     ********************************************************************************/
+
+
+    public String convertAmount(String currency, String amount) {
+        String convertedAmount;
+        double amountdouble = Double.parseDouble(amount);
+
+        if (amount.equals("0.00") || amount.equals("0")) {
+            convertedAmount = chooseCurrency(currency) + "0.00";
+            System.out.println("COnverted Amount 0 or 0.00 with Currency Symbol" + convertedAmount);
+        } else {
+            DecimalFormat amountFormat = new DecimalFormat("###,###.00");
+            String finalamountformatted = amountFormat.format(amountdouble);
+            convertedAmount = chooseCurrency(currency) + finalamountformatted;
+            System.out.println("Converted Amount with currency Symbol" + convertedAmount);
+        }
+        return convertedAmount;
+    }
