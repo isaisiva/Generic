@@ -1,0 +1,234 @@
+public void postCall(required parameters)
+
+
+public void postRateReset(String loanID, String date) throws IOException, ParseException, JSONException, java.text.ParseException {
+
+		System.out.println("loan ID "+loanID);
+		URL url = new URL(prop.getProperty("url") + "/identity/v1/token");
+		HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+		conn.setDoOutput(true);
+		conn.setRequestMethod("POST");
+		// Headers
+		conn.setRequestProperty("Content-Type", "application/json");
+		conn.setRequestProperty("X-Tenant-Identifier", prop.getProperty("tenant"));
+		// Body of the payload
+		String input = "{\r\n" + "  \"grant_type\": \"password\",\r\n" + "  \"username\": \"operator\",\r\n"
+				+ "  \"password\": \"SW5pdDFAbDE=\",\r\n" + "  \"refreshTokenParam\": null\r\n" + "}";
+		System.out.println(input);
+		OutputStream os = conn.getOutputStream();
+		os.write(input.getBytes());
+		os.flush();
+		BufferedReader br = new BufferedReader(new InputStreamReader((conn.getInputStream())));
+		String output = null;
+		while ((output = br.readLine()) != null) {
+			System.out.println("output" + output);
+			JSONObject json = (JSONObject) new JSONParser().parse(output);
+			System.out.println("JSON Get:" + json.get("accessToken"));
+			System.out.println("POST URL:" + prop.getProperty("url") + "/api/portfolio/v1/loanaccount/ratereset/loan?loanId=" + loanID + "&date=" + date);
+			URL url2 = new URL(prop.getProperty("url") + "/api/portfolio/v1/loanaccount/ratereset/loan?loanId=" + loanID + "&date=" + date);
+			HttpURLConnection conn1 = (HttpURLConnection) url2.openConnection();
+			conn1.setRequestMethod("POST");
+			conn1.setRequestProperty("Content-Type", "application/json");
+			conn1.setRequestProperty("X-Tenant-Identifier", prop.getProperty("tenant"));
+			conn1.setRequestProperty("UUID", "sfsdfsfs");
+			conn1.setRequestProperty("User", "operator");
+			conn1.setRequestProperty("Authorization", json.get("accessToken").toString());
+			System.out.println("GET JSON1"+json.get("accessToken"));
+			System.out.println("conn1.getResponseCode()" + conn1.getResponseCode());
+			System.out.println("conn1.getResponseCode()" + conn1.getResponseMessage());
+			if (conn1.getResponseCode() != 200) {
+				Assert.assertTrue(false);
+				throw new RuntimeException("Failed : HTTP error code : " + conn1.getResponseCode()+"Message: "+conn1.getResponseMessage());
+			}
+			conn1.disconnect();
+		}
+	}
+  
+  
+  ***********************************************************************************
+  PUT
+  *******************************************************************************
+  
+  public void putPeriodicFeeApplication(String loanID, String date) throws IOException, ParseException, JSONException {
+		System.out.println("loan ID "+loanID);
+		URL url = new URL(prop.getProperty("url") + "/identity/v1/token");
+		HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+		conn.setDoOutput(true);
+		conn.setRequestMethod("POST");
+		// Headers
+		conn.setRequestProperty("Content-Type", "application/json");
+		conn.setRequestProperty("X-Tenant-Identifier", prop.getProperty("tenant"));
+		// Body of the payload
+		String input = "{\r\n" + "  \"grant_type\": \"password\",\r\n" + "  \"username\": \"operator\",\r\n"
+				+ "  \"password\": \"SW5pdDFAbDE=\",\r\n" + "  \"refreshTokenParam\": null\r\n" + "}";
+		System.out.println(input);
+		OutputStream os = conn.getOutputStream();
+		os.write(input.getBytes());
+		os.flush();
+		BufferedReader br = new BufferedReader(new InputStreamReader((conn.getInputStream())));
+		String output = null;
+		while ((output = br.readLine()) != null) {
+			System.out.println("output" + output);
+			JSONObject json = (JSONObject) new JSONParser().parse(output);
+			System.out.println("JSON Get:" + json.get("accessToken"));
+			System.out.println("PUT URL:" + prop.getProperty("url") + "/api/portfolio/v1/loanaccount/accountsWithPeriodicFee/" + loanID + "?curDate=" + date);
+			URL url2 = new URL(prop.getProperty("url") + "/api/portfolio/v1/loanaccount/accountsWithPeriodicFee/" + loanID + "?curDate=" + date);
+			HttpURLConnection conn1 = (HttpURLConnection) url2.openConnection();
+			conn1.setRequestMethod("PUT");
+			conn1.setRequestProperty("Content-Type", "application/json");
+			conn1.setRequestProperty("X-Tenant-Identifier", prop.getProperty("tenant"));
+			conn1.setRequestProperty("UUID", "sfsdfsfs");
+			conn1.setRequestProperty("User", "operator");
+			conn1.setRequestProperty("Authorization", json.get("accessToken").toString());
+			System.out.println("GET JSON1"+json.get("accessToken"));
+			System.out.println("conn1.getResponseCode()" + conn1.getResponseCode());
+			System.out.println("conn1.getResponseCode()" + conn1.getResponseMessage());
+			if (conn1.getResponseCode() != 200) {
+				Assert.assertTrue(false);
+				throw new RuntimeException("Failed : HTTP error code : " + conn1.getResponseCode()+"Message: "+conn1.getResponseMessage());
+			}
+			conn1.disconnect();
+		}
+
+
+	}
+  
+  **************************************************************************
+  BATCH
+  ************************************************************************
+  
+  	public String generateToken() throws IOException, ParseException {
+		final String POST_PARAMS = "{\r\n" + "\"grant_type\":\"password\",\r\n" +"\"username\":\"operator\",\r\n"+"\"password\":\"SW5pdDFAbDE=\",\r\n" +"\"refreshTokenParam\":null\r\n" +"}";
+		System.out.println(POST_PARAMS);
+		String accessToken = null;
+		URL obj = new URL(prop.getProperty("url")+"identity/v1/token");
+		HttpURLConnection postConnection = (HttpURLConnection) obj.openConnection();
+		postConnection.setRequestMethod("POST");
+		postConnection.setRequestProperty("Content-Type", "application/json");
+		postConnection.setRequestProperty("X-Tenant-Identifier", prop.getProperty("tenant"));
+		postConnection.setDoOutput(true);
+		OutputStream os = postConnection.getOutputStream();
+		os.write(POST_PARAMS.getBytes());
+		os.flush();
+		os.close();
+		int responseCode = postConnection.getResponseCode();
+		System.out.println("POST Response Code :  " + responseCode);
+		System.out.println("POST Response Message : " + postConnection.getResponseMessage());
+		if (responseCode == HttpURLConnection.HTTP_OK) { //success
+			BufferedReader in = new BufferedReader(new InputStreamReader(
+					postConnection.getInputStream()));
+			String inputLine;
+			StringBuffer response = new StringBuffer();
+			while ((inputLine = in .readLine()) != null) {
+				response.append(inputLine);
+			} in .close();
+			// print result
+			System.err.println(response);
+			JSONParser parse = new JSONParser();
+			JSONObject jobj = (JSONObject)parse.parse(response.toString());
+			//System.err.println(jobj.get("accessToken"));
+			accessToken = jobj.get("accessToken").toString();
+			System.err.println("ACCESS TOKEN:"+accessToken);
+		} else {
+			System.out.println("TOKEN NOT GENERATED");
+		}
+		return accessToken;
+	}
+
+	public void runBatchJob(String loanID, String date, String batchJobType) throws IOException, ParseException, InterruptedException {
+		String URL=prop.getProperty("url");
+		String accessToken=generateToken();
+		if(batchJobType.equalsIgnoreCase("deferdemand")) {
+			URL url = new URL(URL+ "api/portfolio/v1/fees/deferdemand?date="+date+"&loanid="+loanID);
+			System.out.println("UURRLL IISS:"+URL+ "api/portfolio/v1/fees/deferdemand?date="+date+"&loanid="+loanID);
+			HttpURLConnection postConnection = (HttpURLConnection) url.openConnection();
+			postConnection.setRequestMethod("POST");
+			postConnection.setRequestProperty("Content-Type", "application/json");
+			postConnection.setRequestProperty("X-Tenant-Identifier", prop.getProperty("tenant"));
+			postConnection.setRequestProperty("UUID", "sfsdfsfs");
+			postConnection.setRequestProperty("User", "operator");
+			postConnection.setRequestProperty("Authorization", accessToken);
+			System.out.println(postConnection.getResponseCode());
+			System.out.println(postConnection.getResponseMessage());
+			if (postConnection.getResponseCode() != 202) {
+				Assert.assertTrue(false);
+				throw new RuntimeException("Failed : HTTP error code : " + postConnection.getResponseCode()+"Message: "+postConnection.getResponseMessage());
+			}
+			postConnection.disconnect();
+		}
+
+		else if(batchJobType.equalsIgnoreCase("accrueFeeCommand")) {
+			System.err.println(URL+ "api/portfolio/v1/fees/accrueFeeCommand"+"?loanIdentifier="+loanID+"&curDate="+date);
+			URL url = new URL(URL+ "api/portfolio/v1/fees/accrueFeeCommand"+"?loanIdentifier="+loanID+"&curDate="+date);
+			HttpURLConnection postConnection = (HttpURLConnection) url.openConnection();
+			postConnection.setRequestMethod("POST");
+			postConnection.setRequestProperty("Content-Type", "application/json");
+			postConnection.setRequestProperty("X-Tenant-Identifier", prop.getProperty("tenant"));
+			postConnection.setRequestProperty("UUID", "sfsdfsfs");
+			postConnection.setRequestProperty("User", "operator");
+			postConnection.setRequestProperty("Authorization", generateToken());
+			System.out.println(postConnection.getResponseCode());
+			if (postConnection.getResponseCode() != 200) {
+				Assert.assertTrue(false);
+				throw new RuntimeException("Failed : HTTP error code : " + postConnection.getResponseCode()+"Message: "+postConnection.getResponseMessage());
+			}
+			postConnection.disconnect();
+		}
+
+		else if(batchJobType.equalsIgnoreCase("accountsWithPeriodicFee")) {
+			System.err.println(URL+ "api/portfolio/v1/loanaccount/accountsWithPeriodicFee/"+loanID+"?curDate="+date);
+			URL url = new URL(URL+ "api/portfolio/v1/loanaccount/accountsWithPeriodicFee/"+loanID+"?curDate="+date);
+			HttpURLConnection putConnection = (HttpURLConnection) url.openConnection();
+			putConnection.setRequestMethod("PUT");
+			putConnection.setRequestProperty("Content-Type", "application/json");
+			putConnection.setRequestProperty("X-Tenant-Identifier", prop.getProperty("tenant"));
+			putConnection.setRequestProperty("UUID", "sfsdfsfs");
+			putConnection.setRequestProperty("User", "operator");
+			putConnection.setRequestProperty("Authorization", generateToken());
+			Thread.sleep(10000);
+			System.out.println(putConnection.getResponseCode());
+			if (putConnection.getResponseCode() != 200) {
+				Assert.assertTrue(false);
+				throw new RuntimeException("Failed : HTTP error code : " + putConnection.getResponseCode()+"Message: "+putConnection.getResponseMessage());
+			}
+			putConnection.disconnect();
+		}
+
+		else if(batchJobType.equalsIgnoreCase("ratereset")) {
+			URL url = new URL(URL+ "api/portfolio/v1/loanaccount/ratereset/loan?loanId="+loanID+"&date="+date);
+			HttpURLConnection putConnection = (HttpURLConnection) url.openConnection();
+			putConnection.setRequestMethod("POST");
+			putConnection.setRequestProperty("Content-Type", "application/json");
+			putConnection.setRequestProperty("X-Tenant-Identifier", prop.getProperty("tenant"));
+			putConnection.setRequestProperty("UUID", "sfsdfsfs");
+			putConnection.setRequestProperty("User", "operator");
+			putConnection.setRequestProperty("Authorization", generateToken());
+			System.out.println(putConnection.getResponseCode());
+			if (putConnection.getResponseCode() != 200) {
+				System.err.println(putConnection.getResponseMessage());
+				Assert.assertTrue(false);
+				throw new RuntimeException("Failed : HTTP error code : " + putConnection.getResponseCode()+"Message: "+putConnection.getResponseMessage());
+			}
+			putConnection.disconnect();
+		}
+
+		else if(batchJobType.equalsIgnoreCase("interestRollup")) {
+			URL url = new URL(URL+ "api/portfolio/v1/loanaccount/interestRollup/"+loanID+"?curDate="+date);
+			HttpURLConnection postConnection = (HttpURLConnection) url.openConnection();
+			postConnection.setRequestMethod("POST");
+			postConnection.setRequestProperty("Content-Type", "application/json");
+			postConnection.setRequestProperty("X-Tenant-Identifier", prop.getProperty("tenant"));
+			postConnection.setRequestProperty("UUID", "sfsdfsfs");
+			postConnection.setRequestProperty("User", "operator");
+			postConnection.setRequestProperty("Authorization", generateToken());
+			System.out.println(postConnection.getResponseCode());
+			if (postConnection.getResponseCode() != 202) {
+				Assert.assertTrue(false);
+				throw new RuntimeException("Failed : HTTP error code : " + postConnection.getResponseCode()+"Message: "+postConnection.getResponseMessage());
+			}
+			postConnection.disconnect();
+		}
+	}
+  
+  __________________________________
+  
